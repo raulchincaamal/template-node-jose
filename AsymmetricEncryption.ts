@@ -4,6 +4,10 @@ export class AsymmetricEncryption {
   private signatureKey: JWK.Key | undefined;
 
   constructor() {
+    this.generateKey();
+  }
+
+  private async generateKey() {
     console.log(
       `------ SECRET SIGNATURE ${process.env.SECRET_SIGNATURE} ------`
     );
@@ -17,10 +21,10 @@ export class AsymmetricEncryption {
      * Generate a key with `Secret signature`
      * from `.env` file
      */
-    JWK.asKey({
+    this.signatureKey = await JWK.asKey({
       kty: 'oct',
       k: nodeJose.util.base64url.encode(SECRET_SIGNATURE),
-    }).then((key) => (this.signatureKey = key));
+    });
   }
 
   async encrypt<T>(payload: T) {
