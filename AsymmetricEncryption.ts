@@ -7,15 +7,19 @@ export class AsymmetricEncryption {
     console.log(
       `------ SECRET SIGNATURE ${process.env.SECRET_SIGNATURE} ------`
     );
+
+    const SECRET_SIGNATURE = process.env.SECRET_SIGNATURE;
+
+    if (!SECRET_SIGNATURE)
+      throw new Error('Define a SECRET_SIGNATURE from `.env`');
+
     /**
      * Generate a key with `Secret signature`
      * from `.env` file
      */
     JWK.asKey({
       kty: 'oct',
-      k: nodeJose.util.base64url.encode(
-        process.env.SECRET_SIGNATURE /** SECRET SIGNATURE FROM `.env` file */
-      ),
+      k: nodeJose.util.base64url.encode(SECRET_SIGNATURE),
     }).then((key) => (this.signatureKey = key));
   }
 
