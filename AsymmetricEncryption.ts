@@ -27,11 +27,12 @@ export class AsymmetricEncryption {
     if (!this.signatureKey)
       throw new Error('PLEASE CREATE A KEY TO ENCRYPT 🙂');
 
+    const input = JSON.stringify(payload)
     const encrypted = await JWE.createEncrypt(
       { format: 'compact' } /** Use Compact Serialization */,
       this.signatureKey
     )
-      .update(payload)
+      .update(input)
       .final();
 
     return encrypted;
@@ -45,7 +46,7 @@ export class AsymmetricEncryption {
       encrypted
     );
 
-    return payload.toString() as T;
+    return JSON.parse(payload.toString()) as T;
   }
 }
 
