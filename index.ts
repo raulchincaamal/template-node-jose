@@ -37,6 +37,12 @@ app.get('/decrypt', async (req: Request, res: Response) => {
   res.send(`------ DECRYPTED ${JSON.stringify(decrypt)} ------`);
 });
 
+app.get('/generate-sha', (req: Request, res: Response) => {
+  const { value } = req.query;
+  const generatedSHA = encryptionHandler.generateSHA(value as string);
+  res.send(`------ SHA ${generatedSHA} ------`);
+});
+
 app.listen(port, () => {
   console.log(`Server is Fire at http://localhost:${port}`);
 });

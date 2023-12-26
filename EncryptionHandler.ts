@@ -8,10 +8,6 @@ export class EncryptionHandler {
     this.generateKey();
   }
 
-  private generateSHA(value: string) {
-    return createHash('sha256').update(value).digest('hex');
-  }
-
   private async generateKey() {
     const SECRET_SIGNATURE = process.env.SECRET_SIGNATURE;
 
@@ -52,6 +48,10 @@ export class EncryptionHandler {
     );
 
     return JSON.parse(payload.toString()) as T;
+  }
+
+  generateSHA(value: string) {
+    return createHash('sha256').update(value).digest('hex');
   }
 }
 
