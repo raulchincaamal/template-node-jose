@@ -1,10 +1,15 @@
 import nodeJose, { JWK, JWE } from 'node-jose';
+import { createHash } from 'crypto';
 
 export class EncryptionHandler {
   private signatureKey: JWK.Key | undefined;
 
   constructor() {
     this.generateKey();
+  }
+
+  private generateSHA(value: string) {
+    return createHash('sha256').update(value).digest('hex');
   }
 
   private async generateKey() {
@@ -27,7 +32,7 @@ export class EncryptionHandler {
     if (!this.signatureKey)
       throw new Error('PLEASE CREATE A KEY TO ENCRYPT 🙂');
 
-    const input = JSON.stringify(payload)
+    const input = JSON.stringify(payload);
     const encrypted = await JWE.createEncrypt(
       { format: 'compact' } /** Use Compact Serialization */,
       this.signatureKey
