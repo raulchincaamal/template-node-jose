@@ -1,6 +1,6 @@
 import nodeJose, { JWK, JWE } from 'node-jose';
 
-export class AsymmetricEncryption {
+export class EncryptionHandler {
   private signatureKey: JWK.Key | undefined;
 
   constructor() {
@@ -8,10 +8,6 @@ export class AsymmetricEncryption {
   }
 
   private async generateKey() {
-    console.log(
-      `------ SECRET SIGNATURE ${process.env.SECRET_SIGNATURE} ------`
-    );
-
     const SECRET_SIGNATURE = process.env.SECRET_SIGNATURE;
 
     if (!SECRET_SIGNATURE)
