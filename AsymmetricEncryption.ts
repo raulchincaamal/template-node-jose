@@ -1,24 +1,31 @@
-import nodeJose from 'node-jose';
+import nodeJose, { JWK, JWE } from 'node-jose';
 
 export class AsymmetricEncryption {
-  signatureAsKey = nodeJose.JWK.asKey({
-    kty: 'oct',
-    k: nodeJose.util.base64url.encode(
-      process.env.SECRET_SIGNATURE ?? '' /** HERE ENTER YOUR SECRET SIGNATURE */
-    ),
-  });
+  private signatureKey: JWK.Key | undefined;
 
   constructor() {
     console.log(
       `------ SECRET SIGNATURE ${process.env.SECRET_SIGNATURE} ------`
     );
+    /**
+     * Generate a key with `Secret signature`
+     * from `.env` file
+     */
+    JWK.asKey({
+      kty: 'oct',
+      k: nodeJose.util.base64url.encode(
+        process.env.SECRET_SIGNATURE /** SECRET SIGNATURE FROM `.env` file */
+      ),
+    }).then((key) => (this.signatureKey = key));
   }
 
   async encrypt<T>(payload: T) {
-    const key = await this.signatureAsKey;
-    const encrypted = await nodeJose.JWE.createEncrypt(
-      { format: 'compact' },
-      key
+    if (!this.signatureKey)
+      throw new Error('PLEASE CREATE A KEY TO ENCRYPT 🙂');
+
+    const encrypted = await JWE.createEncrypt(
+      { format: 'compact' } /** Use Compact Serialization */,
+      this.signatureKey
     )
       .update(payload)
       .final();
@@ -27,8 +34,10 @@ export class AsymmetricEncryption {
   }
 
   async decrypt<T>(encrypted: string) {
-    const key = await this.signatureAsKey;
-    const { payload } = await nodeJose.JWE.createDecrypt(key).decrypt(
+    if (!this.signatureKey)
+      throw new Error('PLEASE CREATE A KEY TO DECRYPT 🙂');
+
+    const { payload } = await JWE.createDecrypt(this.signatureKey).decrypt(
       encrypted
     );
 
