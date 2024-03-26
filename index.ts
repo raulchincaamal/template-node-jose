@@ -30,6 +30,8 @@ app.get('/encrypt-object', async (req: Request, res: Response) => {
 
 app.get('/decrypt', async (req: Request, res: Response) => {
   const { value } = req.query;
+  if (!value) res.send(`------ NO VALUE TO DECRYPT 🥵 ------`);
+
   const decrypt = await encryptionHandler.decrypt<{
     id: string;
     name: string;
